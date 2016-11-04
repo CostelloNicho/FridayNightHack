@@ -14,7 +14,7 @@ public class Visualizer : MonoBehaviour
 	public float[] SpectrumDataDebug;
 
 	private float[] freqData;
-	private float[] numSamples = 1024;
+    private int numSamples = 1024;
 	private float maxFreq;
 
 	void Start()

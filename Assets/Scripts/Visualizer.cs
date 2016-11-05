@@ -27,7 +27,7 @@ public class Visualizer : MonoBehaviour
 			var pos = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle))*CubeCircleRadius;
 			Cubes[i] =
 				Instantiate(CubePrefab, pos, Quaternion.identity) as GameObject;
-			Cubes[i].transform.SetParent(TransformParent, true);
+			Cubes[i].transform.SetParent(TransformParent, false);
 		}
 
 		// Setup Variables for Frequency 

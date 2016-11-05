@@ -14,7 +14,7 @@ public class Visualizer : MonoBehaviour
 	public float[] SpectrumDataDebug;
 
 	private float[] freqData;
-    private int numSamples = 1024;
+	private int numSamples = 1024;
 	private float maxFreq;
 
 	void Start()
@@ -27,7 +27,7 @@ public class Visualizer : MonoBehaviour
 			var pos = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle))*CubeCircleRadius;
 			Cubes[i] =
 				Instantiate(CubePrefab, pos, Quaternion.identity) as GameObject;
-			Cubes[i].transform.SetParent(TransformParent, false);
+			Cubes[i].transform.SetParent(TransformParent, true);
 		}
 
 		// Setup Variables for Frequency 
@@ -38,8 +38,8 @@ public class Visualizer : MonoBehaviour
 	void Update()
 	{
 		var spectrum = AudioListener.GetSpectrumData(1024, 0,
-			FFTWindow.Hamming);
-		SpectrumDataDebug = spectrum;
+			FFTWindow.BlackmanHarris);
+		freqData = spectrum;
 
 		for (var cubeIndex = 0; cubeIndex < NumberOfCubes; cubeIndex++)
 		{
@@ -48,12 +48,44 @@ public class Visualizer : MonoBehaviour
 				Time.deltaTime * Speed);
 			Cubes[cubeIndex].transform.localScale = scale;
 		}
+
+		Debug.Log("Bass: " + GetBass() + " | Treble: " + GetTreble());
 	}
 
-	void BandVol (float lowFreq, float highFreq)
+	/**
+	 * Gets the Average Volume of a given Frequency Band 
+	 */ 
+	float BandVol (float lowFreq, float highFreq)
 	{
+		// Confine High and Low End of Frequencies Specturm 
 		lowFreq = Mathf.Clamp (lowFreq, 20, maxFreq); // Limit Low Frequencies 
 		highFreq = Mathf.Clamp(highFreq, lowFreq, maxFreq);
 
+		int n1 = Mathf.FloorToInt (lowFreq * numSamples / maxFreq);
+		int n2 = Mathf.FloorToInt (highFreq * numSamples / maxFreq);
+		float sum = 0;
+
+		// Average Volumes of Frequences lowFreq to highFreq
+		for (var freqIndex = n1; freqIndex <= n2; freqIndex++) {
+			sum += freqData [freqIndex];
+		}
+
+		return sum / (n2 - n1 + 1);
 	}
+
+	/**
+	 * Gets the Volume of the Bass in the current Audio Sample
+	 */ 
+	float GetBass () {
+		return BandVol (16, 256);
+	}
+
+	/**
+	 * Gets the Volume of the Treble of the current Audio Sample 
+	 */
+	float GetTreble() {
+		return BandVol (2048, 16384);
+	}
+
+
 }

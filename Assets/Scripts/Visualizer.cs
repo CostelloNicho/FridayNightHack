@@ -46,10 +46,14 @@ public class Visualizer : MonoBehaviour
 			var scale = Cubes[cubeIndex].transform.localScale;
 			scale.y = Mathf.Lerp(scale.y, spectrum[cubeIndex] * CubeEmphasis,
 				Time.deltaTime * Speed);
+		    var position = Cubes[cubeIndex].transform.localPosition;
+            position.y = scale.y/2 + 1.1f;
 			Cubes[cubeIndex].transform.localScale = scale;
+			Cubes[cubeIndex].transform.localPosition = position;
 		}
 
 		Debug.Log("Bass: " + GetBass() + " | Treble: " + GetTreble());
+
 	}
 
 	/**
